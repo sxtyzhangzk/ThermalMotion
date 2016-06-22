@@ -20,7 +20,7 @@ std::vector<obstacle> Obstacles;
 
 void drawCircle(GLfloat ox, GLfloat oy, GLfloat radius)
 {
-	static const int partitions = 100;
+	static const int partitions = 15;
 	glBegin(GL_TRIANGLES);
 	for (int i = 0; i < partitions; i++)
 	{
@@ -32,7 +32,7 @@ void drawCircle(GLfloat ox, GLfloat oy, GLfloat radius)
 }
 void drawCircleOutline(float ox, float oy, float radius)
 {
-	static const int partitions = 100;
+	static const int partitions = 30;
 	glBegin(GL_LINE_STRIP);
 	for (int i = 0; i <= partitions; i++)
 		glVertex2f(ox + radius * cosf(2 * Pi / partitions * i), oy + radius * sinf(2 * Pi / partitions * i));
@@ -97,6 +97,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	while (!glfwWindowShouldClose(window))
 	{
+		static int tPhy = 0, tRender = 0;
 		glfwPollEvents();
 
 		clock_t t0 = clock();
@@ -106,18 +107,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		//ImGui::ShowTestWindow();
 		ImGui::SetNextWindowSize(ImVec2(100, 300), ImGuiSetCond_FirstUseEver);
 		ImGui::Begin(u8"设置");
-		ImGui::Text(u8"你好");
+		ImGui::Text(u8"物理模拟%02d ms, 渲染场景%02d ms", tPhy, tRender);
+		ImGui::Text(u8"FPS: %f", io.Framerate);
 		static float pR = 1.0f;
 		ImGui::SliderFloat(u8"粒子大小", &pR, 0.5f, 10.0f);
 		static int pCnt = 100;
 		ImGui::SliderInt(u8"粒子数量", &pCnt, 10, 1000);
 		static float pTemp = 100.0f;
-		ImGui::SliderFloat(u8"温度", &pTemp, 1, 1000);
+		ImGui::SliderFloat(u8"温度", &pTemp, 1, 10000);
 		ImGui::Button(u8"清除粒子");
 		if (ImGui::Button(u8"开始模拟"))
 		{
 			pRadius = pR;
-			initParticles(pCnt, 100);
+			initParticles(pCnt, pTemp);
 		}
 	
 		ImGui::End();
@@ -134,7 +136,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		onTick(1000 / FPS);
+		clock_t timeP0 = clock();
+		onTick(1.0 / FPS);
+		clock_t timeP1 = clock();
 
 		renderScene(width, height);
 
@@ -145,6 +149,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		clock_t t1 = clock();
 		if (t1 - t0 < 1000 / FPS)
 			Sleep(1000 / FPS - (t1 - t0));
+
+		tPhy = timeP1 - timeP0;
+		tRender = t1 - timeP1;
 	}
 	return 0;
 }
