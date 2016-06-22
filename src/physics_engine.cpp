@@ -1,7 +1,7 @@
 #include <cmath>
 #include <random>
 #include "common.h"
-
+#include<assert.h>
 const double eps = 1e-6;
 //particle obj[1001];
 const double inf = 1000;
@@ -36,7 +36,11 @@ double nxtime(const particle& a, const particle& b)//下一个碰撞时间
 	double C = (a.pos - b.pos)*(a.pos - b.pos) - 4.0*pRadius*pRadius;
 	double delta = B*B - 4.0*A*C;
 	if (delta<0) return -1.0;
-	else return (-B - sqrt(delta)) / (2.0*A);//也许有bug 	
+	else 
+	{
+		assert((-B - sqrt(delta)) / (2.0*A)>eps);
+		return (-B - sqrt(delta)) / (2.0*A);//也许有bug 	
+	}
 }
 double nxtime(const particle& o, int wall)//上1右2下3左4
 {
@@ -45,14 +49,14 @@ double nxtime(const particle& o, int wall)//上1右2下3左4
 		//double p = (wall == 1 ? h : -h);
 		//return (h - o.pos.y) / o.v.y;
 		double p = (wall == 1 ? h : 0);
-		return abs(p - o.pos.y) / o.v.y;
+		return abs(p- pRadius- o.pos.y) / o.v.y;
 	}
 	else
 	{
 		//double p = (wall == 2 ? w : -w);
 		//return (h - o.pos.x) / o.v.x;
 		double p = (wall == 2 ? w : 0);
-		return abs(p - o.pos.x) / o.v.x;
+		return abs(p- pRadius- o.pos.x) / o.v.x;
 	}
 }
 void cal(int o)
@@ -106,6 +110,7 @@ void timefly()//下一个时间点的各个点的坐标
 				for (int i = 0; i<obj_num; i++)
 					if (i == o1 || n_id[i] == o1)
 						cal(i);
+					else n_time[i]-=min;
 			}
 			else
 			{
@@ -114,6 +119,7 @@ void timefly()//下一个时间点的各个点的坐标
 				for (int i = 0; i<obj_num; i++)
 					if (i == o1 || n_id[i] == o1 || i == o2 || n_id[i] == o2)
 						cal(i);
+					else n_time[i]-=min;
 			}
 			t += min;
 		}
