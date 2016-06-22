@@ -49,14 +49,16 @@ double nxtime(const particle& o, int wall)//上1右2下3左4
 		//double p = (wall == 1 ? h : -h);
 		//return (h - o.pos.y) / o.v.y;
 		double p = (wall == 1 ? h-pRadius : 0+pRadius);
-		return (p- o.pos.y) / o.v.y;
+		if(h-pRadius>=o.pos.y && o.pos.y>=0+pRadius) return (p- o.pos.y) / o.v.y;
+		else return eps;
 	}
 	else
 	{
 		//double p = (wall == 2 ? w : -w);
 		//return (h - o.pos.x) / o.v.x;
 		double p = (wall == 2 ? w-pRadius : 0+pRadius);
-		return (p-  o.pos.x) / o.v.x;
+		if(w-pRadius>=o.pos.x && o.pos.x>=0+pRadius) return (p-  o.pos.x) / o.v.x;
+		else return eps;
 	}
 }
 void cal(int o)
@@ -99,7 +101,7 @@ void timefly()//下一个时间点的各个点的坐标
 				o1 = i;
 				o2 = n_id[i];
 			}
-		if (t + min<d)
+		if (t + min<=d)
 		{
 			//for (int i = 0; i<obj_num; i++) obj[i].pos = obj[i].pos + (obj[i].v*min);
 			for (int i = 0; i<obj_num; i++) Particles[i].pos = Particles[i].pos + (Particles[i].v*min);
