@@ -21,13 +21,18 @@ void collide(particle& a, particle& b)//碰撞
 	b.v = v2 - (x2 - x1)*(((v1 - v2)*(x1 - x2)) / ((x2 - x1)*(x2 - x1)));
 	return;
 }
-void collide(particle& o, int wall)//上1右2下3左4 
+double collide(particle& o, int wall)//上1右2下3左4 
 {
 	if (wall % 2)
+	{
 		o.v.y = -o.v.y;
+		return 2.0*abs(o.v.y);
+	}
 	else
+	{
 		o.v.x = -o.v.x;
-	return;
+		return 2.0*abs(o.v.x);
+	}
 }
 double nxtime(const particle& a, const particle& b)//下一个碰撞时间 
 {
@@ -87,9 +92,10 @@ void cal(int o)
 		}
 	return;
 }
-void timefly()//下一个时间点的各个点的坐标 
+double timefly()//下一个时间点的各个点的坐标 
 {
 	double t = 0;
+	double p=0;
 	while (1)
 	{
 		double min = inf;
@@ -108,7 +114,7 @@ void timefly()//下一个时间点的各个点的坐标
 			if (o2<0)
 			{
 				//collide(obj[o1], -o2);
-				collide(Particles[o1], -o2);
+				p+=collide(Particles[o1], -o2);
 				for (int i = 0; i<obj_num; i++)
 					if (i == o1 || n_id[i] == o1)
 						cal(i);
@@ -134,7 +140,7 @@ void timefly()//下一个时间点的各个点的坐标
 		Particles[i].pos = Particles[i].pos + (Particles[i].v*tt);
 		n_time[i] -= tt;
 	}
-	return;
+	return p;
 }
 
 bool collideWithObstacle(const Point &p)
