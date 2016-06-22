@@ -181,6 +181,10 @@ void initParticles(int size, double temperature)
 			}
 		}
 	}
+	w = h = SceneSize;
+	obj_num = Particles.size();
+	for (int i = 0; i < Particles.size(); i++)
+		cal(i);
 }
 
 void onTick(double interval)
