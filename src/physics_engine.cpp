@@ -38,7 +38,7 @@ double nxtime(const particle& a, const particle& b)//下一个碰撞时间
 	if (delta<0) return -1.0;
 	else 
 	{
-		assert((-B - sqrt(delta)) / (2.0*A)>eps);
+		if(C<-eps) return eps;
 		return (-B - sqrt(delta)) / (2.0*A);//也许有bug 	
 	}
 }
