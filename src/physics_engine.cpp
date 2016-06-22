@@ -48,15 +48,15 @@ double nxtime(const particle& o, int wall)//ио1ср2об3вС4
 	{
 		//double p = (wall == 1 ? h : -h);
 		//return (h - o.pos.y) / o.v.y;
-		double p = (wall == 1 ? h : 0);
-		return abs(p- pRadius- o.pos.y) / o.v.y;
+		double p = (wall == 1 ? h-pRadius : 0+pRadius);
+		return (p- o.pos.y) / o.v.y;
 	}
 	else
 	{
 		//double p = (wall == 2 ? w : -w);
 		//return (h - o.pos.x) / o.v.x;
-		double p = (wall == 2 ? w : 0);
-		return abs(p- pRadius- o.pos.x) / o.v.x;
+		double p = (wall == 2 ? w-pRadius : 0+pRadius);
+		return (p-  o.pos.x) / o.v.x;
 	}
 }
 void cal(int o)
