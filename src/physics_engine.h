@@ -2,6 +2,6 @@
 #define TM_PHYSICS_ENGINE_H
 
 void onTick(double interval);
-void initParticles(int size);
+void initParticles(int size, double temperature);
 
 #endif

@@ -161,6 +161,7 @@
     <ClCompile Include="..\..\..\include\imgui\imgui_draw.cpp" />
     <ClCompile Include="..\..\..\include\imgui\imgui_impl_glfw.cpp" />
     <ClCompile Include="..\..\..\src\main.cpp" />
+    <ClCompile Include="..\..\..\src\physics_engine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\imgui\imconfig.h" />

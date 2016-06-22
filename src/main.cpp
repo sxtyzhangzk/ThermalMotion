@@ -6,7 +6,9 @@
 #include <gl/GLU.h>
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>
+#include <string>
 #include "common.h"
+#include "physics_engine.h"
 
 const int FPS = 120;
 const float Pi = 3.1415927f;
@@ -54,10 +56,16 @@ void renderScene(float width, float height)
 		glColor3f(i.r / 255.0f, i.g / 255.0f, i.b / 255.0f);
 		drawCircle(scale * i.pos.x, scale * i.pos.y, pRadius);
 		glColor3f(1.0f, 1.0f, 1.0f);
-		glLineWidth(pRadius / 5);
-		drawCircleOutline(scale * i.pos.x, scale * i.pos.y, pRadius);
+		glLineWidth(scale * pRadius / 5);
+		drawCircleOutline(scale * i.pos.x, scale * i.pos.y, scale * pRadius);
 	}
 }
+
+void setupScene()
+{
+
+}
+
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -71,6 +79,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	ImGuiIO &io = ImGui::GetIO();
 	ImGui_ImplGlfw_Init(window, true);
+	
+	char sysroot[30];
+	GetEnvironmentVariableA("SystemRoot", sysroot, sizeof(sysroot));
+	std::string fontCN = sysroot;
+	fontCN += "\\Fonts\\msyh.ttc";
+	if (GetFileAttributesA(fontCN.c_str()) == INVALID_FILE_ATTRIBUTES)
+	{
+		fontCN = sysroot;
+		fontCN += "\\Fonts\\simsun.ttc";
+		io.Fonts->AddFontFromFileTTF(fontCN.c_str(), 18.0f, nullptr, io.Fonts->GetGlyphRangesChinese());
+	}
+	else
+		io.Fonts->AddFontFromFileTTF(fontCN.c_str(), 18.0f, nullptr, io.Fonts->GetGlyphRangesChinese());
 
 	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
@@ -82,7 +103,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		ImGui_ImplGlfw_NewFrame();
 
-		ImGui::ShowTestWindow();
+		//ImGui::ShowTestWindow();
+		ImGui::SetNextWindowSize(ImVec2(100, 300), ImGuiSetCond_FirstUseEver);
+		ImGui::Begin(u8"设置");
+		ImGui::Text(u8"你好");
+		static float pR = 1.0f;
+		ImGui::SliderFloat(u8"粒子大小", &pR, 0.5f, 10.0f);
+		static int pCnt = 100;
+		ImGui::SliderInt(u8"粒子数量", &pCnt, 10, 1000);
+		static float pTemp = 100.0f;
+		ImGui::SliderFloat(u8"温度", &pTemp, 1, 1000);
+		ImGui::Button(u8"清除粒子");
+		if (ImGui::Button(u8"开始模拟"))
+		{
+			pRadius = pR;
+			initParticles(pCnt, 100);
+		}
+	
+		ImGui::End();
 
 		int width, height;
 		glfwGetFramebufferSize(window, &width, &height);
@@ -95,6 +133,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		onTick(1000 / FPS);
 
 		renderScene(width, height);
 
